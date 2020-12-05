@@ -25,5 +25,10 @@ RSpec.describe BinaryBoarding do
     it 'figures out the biggest seat id' do
       expect(described_class.max_seat_id(input)).to eq(908)
     end
+
+    it 'finds my seat' do
+      expect(described_class.find_missing_seat(input)).to eq(619)
+    end
   end
+
 end

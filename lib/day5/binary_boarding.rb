@@ -6,6 +6,11 @@ module BinaryBoarding
     seat_ids.max
   end
 
+  def self.find_missing_seat(input)
+    seat_ids = process_boarding_passes(input).map { |seat| seat[2] }
+    ((seat_ids.min..seat_ids.max).to_a - seat_ids).first
+  end
+
   def self.process_boarding_passes(input)
     input.each_line.map(&:chomp).map do |pass|
       process_boarding_pass(pass)
