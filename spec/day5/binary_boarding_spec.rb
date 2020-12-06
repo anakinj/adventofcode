@@ -30,5 +30,4 @@ RSpec.describe BinaryBoarding do
       expect(described_class.find_missing_seat(input)).to eq(619)
     end
   end
-
 end
