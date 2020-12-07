@@ -6,6 +6,27 @@ module HandyHaversacks
   NO_OTHER      = 'no other'
 
   def self.count_parents(input, color)
+    bags = parse_bags(input)
+
+    parents = Set.new
+    iterate_parents(bags[color]) do |parent|
+      parents << parent[:color]
+    end
+    parents.size
+  end
+
+  def self.count_totals(input, color)
+    bags = parse_bags(input)
+    count_children(bags, bags[color][:children])
+  end
+
+  def self.count_children(all_bags, children)
+    children.map do |color, count|
+      count_children(all_bags, all_bags[color][:children]) * count + count
+    end.sum
+  end
+
+  def self.parse_bags(input)
     bags = {}
     input.each_line do |line|
       match = BAG_REGEX.match(line)
@@ -27,12 +48,7 @@ module HandyHaversacks
                        container[:children][bag[:color]] = (bag[:count] || 1).to_i unless bag[:color] == NO_OTHER
                      end
     end
-
-    parents = Set.new
-    iterate_parents(bags[color]) do |parent|
-      parents << parent[:color]
-    end
-    parents.size
+    bags
   end
 
   def self.iterate_parents(bag, &block)
