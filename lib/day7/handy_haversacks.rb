@@ -17,12 +17,12 @@ module HandyHaversacks
 
   def self.count_totals(input, color)
     bags = parse_bags(input)
-    count_children(bags, bags[color][:children])
+    count_children(bags[color][:children])
   end
 
-  def self.count_children(all_bags, children)
+  def self.count_children(children)
     children.map do |color, count|
-      count_children(all_bags, all_bags[color][:children]) * count + count
+      count_children(color[:children]) * count + count
     end.sum
   end
 
@@ -45,7 +45,7 @@ module HandyHaversacks
                          children: {}
                        }
                        content[:parents] << container
-                       container[:children][bag[:color]] = (bag[:count] || 1).to_i unless bag[:color] == NO_OTHER
+                       container[:children][content] = (bag[:count] || 1).to_i unless bag[:color] == NO_OTHER
                      end
     end
     bags

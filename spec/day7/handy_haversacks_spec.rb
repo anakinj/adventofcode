@@ -34,7 +34,7 @@ RSpec.describe HandyHaversacks do
 
     context 'when real input is given' do
       it 'counts to 11261' do
-        expect(described_class.count_totals(input, 'shiny gold')).to eq(11261)
+        expect(described_class.count_totals(input, 'shiny gold')).to eq(11_261)
       end
     end
   end
