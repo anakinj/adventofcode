@@ -14,4 +14,18 @@ RSpec.describe HandheldHalting do
       expect(bootloader.execute).to eq(1594)
     end
   end
+
+  context 'when example is asked to fix itself' do
+    let(:input) { read_file('day8/example') }
+    it 'counts to 8' do
+      expect(bootloader.fix_and_execute).to eq(8)
+    end
+  end
+
+  context 'when actual data is asked to fix itself' do
+    let(:input) { read_file('day8/input') }
+    it 'counts to 758' do
+      expect(bootloader.fix_and_execute).to eq(758)
+    end
+  end
 end
