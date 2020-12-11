@@ -4,49 +4,36 @@ module SeatingSystem
   class Item
     attr_accessor :room, :row, :col
 
+    DIRECTIONS = %i[west east north south southwest northwest northeast southeast].freeze
+
     def initialize(row, col)
       @row = row
       @col = col
     end
 
-    def neighbours
-      [west, east, north, south,
-       southwest, northwest, northeast, southeast].compact
+    def neighbours(type)
+      DIRECTIONS.map do |direction|
+        first_item_to(direction, type)
+      end.compact
     end
 
-    def west
-      room.item_at(row, col - 1)
+    def first_item_to(direction, cls)
+      r = row
+      c = col
+
+      loop do
+        c -= 1 if %i[west northwest southwest].include?(direction)
+        c += 1 if %i[east northeast southeast].include?(direction)
+        r -= 1 if %i[north northwest northeast].include?(direction)
+        r += 1 if %i[south southwest southeast].include?(direction)
+
+        item = room.item_at(r, c)
+
+        return item if item.nil? || item.is_a?(cls)
+      end
     end
 
-    def east
-      room.item_at(row, col + 1)
-    end
-
-    def north
-      room.item_at(row - 1, col)
-    end
-
-    def south
-      room.item_at(row + 1, col)
-    end
-
-    def southwest
-      room.item_at(row + 1, col - 1)
-    end
-
-    def northwest
-      room.item_at(row - 1, col - 1)
-    end
-
-    def northeast
-      room.item_at(row - 1, col + 1)
-    end
-
-    def southeast
-      room.item_at(row + 1, col + 1)
-    end
-
-    def prepare
+    def prepare(*_args)
       false
     end
 
@@ -70,11 +57,11 @@ module SeatingSystem
       @state == EMPTY
     end
 
-    def prepare
-      if empty? && neighbours.none?(&:occupied?)
+    def prepare(adjacent, tolerance)
+      if empty? && neighbours(adjacent).none?(&:occupied?)
         @next_state = OCCUPIED
         return true
-      elsif occupied? && neighbours.count(&:occupied?) >= 4
+      elsif occupied? && neighbours(adjacent).count(&:occupied?) >= tolerance
         @next_state = EMPTY
         return true
       end
@@ -123,22 +110,25 @@ module SeatingSystem
       items.flatten
     end
 
-    def prepare
-      all_items.map(&:prepare).any?
+    def prepare(adjacent, tolerance)
+      all_items.map { |item| item.prepare(adjacent, tolerance) }.any?
     end
 
     def change
       all_items.each(&:change)
     end
 
-    def to_s
+    def layout
       items.map do |row|
         row.map(&:to_s).join
       end.join("\n")
     end
 
-    def change_until_stable
-      change while prepare
+    def change_until_stable(adjacent, tolerance)
+      while prepare(adjacent, tolerance)
+        change
+        yield(self) if block_given?
+      end
     end
   end
 
@@ -174,9 +164,9 @@ module SeatingSystem
     end
   end
 
-  def self.occupied(input)
+  def self.occupied(input, adjacent = Item, tolerance = 4)
     room = Parser.new(input).fill_room
-    room.change_until_stable
+    room.change_until_stable(adjacent, tolerance)
     room.all_items.count(&:occupied?)
   end
 end

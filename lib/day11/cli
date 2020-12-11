@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative 'seating_system'
+require 'curses'
+
+Curses.init_screen
+begin
+  room = ::SeatingSystem::Parser.new(File.read(ARGV[0])).fill_room
+
+  room.change_until_stable(::SeatingSystem::Seat, 5) do
+    Curses.setpos(0, 0)
+    Curses.addstr(room.layout)
+    Curses.refresh
+    sleep 0.01
+  end
+  Curses.getch  # Waiting for a pressed key to exit
+ensure
+  Curses.close_screen
+end
