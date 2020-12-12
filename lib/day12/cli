@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative 'rain_risk'
+require 'curses'
+
+Curses.init_screen
+begin
+  start_north = 40
+  start_east = 30
+
+  window = ::Curses::Window.new(400, 400, 0, 0)
+  window.setpos(start_north, start_east)
+
+  ::RainRisk::Ship.new.navigate(File.readlines(ARGV[0])) do |ship|
+    window.setpos(start_north + ship.north, start_east + ship.east)
+    window.addstr(ship.to_s)
+    window.refresh
+    # sleep 0.1
+  end
+
+  window.getch  # Waiting for a pressed key to exit
+ensure
+  Curses.close_screen
+end
