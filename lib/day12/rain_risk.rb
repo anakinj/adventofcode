@@ -2,9 +2,13 @@
 
 module RainRisk
   INSTRUCTION = /(?<direction>[NESWLRF])(?<steps>\d+)/.freeze
-  DIRECTIONS = %w[N E S W].freeze
+  DIRECTIONS  = %w[N E S W].freeze
 
   module SimpleShipNavigation
+    def facing
+      @facing ||= 'E'
+    end
+
     def move_one(direction:, steps:)
       case direction
       when 'F'
@@ -14,10 +18,6 @@ module RainRisk
       else
         move(direction, steps)
       end
-    end
-
-    def facing
-      @facing ||= 'E'
     end
 
     def turn(direction, degrees)
@@ -38,9 +38,9 @@ module RainRisk
     end
   end
 
-  module NavigationWithWaypoint
+  module WaypointShipNavigation
     def move_one(direction:, steps:)
-      @waypoint.move_one(direction: direction, steps: steps)
+      waypoint.move_one(direction: direction, steps: steps)
 
       return unless direction == 'F'
 
@@ -57,15 +57,6 @@ module RainRisk
       @east   = east
     end
 
-    def navigate(instructions)
-      instructions.each do |instruction|
-        match = instruction.match(INSTRUCTION)
-        move_one(direction: match[:direction],
-                 steps: match[:steps].to_i)
-        yield(self) if block_given?
-      end
-    end
-
     def move(direction, steps)
       case direction
       when 'N'
@@ -77,14 +68,6 @@ module RainRisk
       when 'W'
         @east -= steps
       end
-    end
-  end
-
-  class Ship < NavalObject
-    attr_accessor :waypoint
-
-    def to_s
-      '🚢'
     end
   end
 
@@ -115,24 +98,41 @@ module RainRisk
         @north = e
       end
     end
+  end
+
+  class Ship < NavalObject
+    include SimpleShipNavigation
 
     def to_s
-      '🔱'
+      '🚢'
+    end
+
+    def manhattan_position
+      north.abs + east.abs
+    end
+
+    def navigate(instructions)
+      instructions.each do |instruction|
+        match = instruction.match(INSTRUCTION)
+        move_one(direction: match[:direction],
+                 steps: match[:steps].to_i)
+        yield(self) if block_given?
+      end
     end
   end
 
-  def self.manhattan_position(input)
-    ship = Ship.new
-    ship.extend(SimpleShipNavigation)
-    ship.navigate(input.each_line)
-    ship.north.abs + ship.east.abs
+  class WaypointShip < Ship
+    include WaypointShipNavigation
+
+    attr_reader :waypoint
+
+    def initialize
+      @waypoint = Waypoint.new(1, 10)
+      super
+    end
   end
 
-  def self.manhattan_position_with_waypoint(input)
-    ship = Ship.new
-    ship.waypoint = Waypoint.new(1, 10)
-    ship.extend(NavigationWithWaypoint)
-    ship.navigate(input.each_line)
-    ship.north.abs + ship.east.abs
+  def self.manhattan_position_for(type, input)
+    type.new.tap { |ship| ship.navigate(input.each_line) }.manhattan_position
   end
 end

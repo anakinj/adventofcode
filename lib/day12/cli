@@ -7,17 +7,13 @@ require 'curses'
 Curses.init_screen
 Curses.curs_set(0)
 begin
-  ship = ::RainRisk::Ship.new
-  ship.waypoint = ::RainRisk::Waypoint.new(1, 10)
-  ship.extend(::RainRisk::NavigationWithWaypoint)
-
   start_north = 20_000
   start_east  = 60_000
   scale       = 1000
 
   Curses.setpos((start_north / scale).to_i, (start_east / scale).to_i)
 
-  ship.navigate(File.readlines(ARGV[0])) do
+  ::RainRisk::WaypointShip.new.navigate(File.readlines(ARGV[0])) do |ship|
     Curses.clear
     Curses.setpos((start_north + ship.north / scale).to_i,
                   (start_east + ship.east / scale).to_i)
