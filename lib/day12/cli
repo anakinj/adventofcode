@@ -5,21 +5,32 @@ require_relative 'rain_risk'
 require 'curses'
 
 Curses.init_screen
+Curses.curs_set(0)
 begin
-  start_north = 40
-  start_east = 30
+  ship = ::RainRisk::Ship.new
+  ship.waypoint = ::RainRisk::Waypoint.new(1, 10)
+  ship.extend(::RainRisk::NavigationWithWaypoint)
 
-  window = ::Curses::Window.new(400, 400, 0, 0)
-  window.setpos(start_north, start_east)
+  start_north = 20_000
+  start_east  = 60_000
+  scale       = 1000
 
-  ::RainRisk::Ship.new.navigate(File.readlines(ARGV[0])) do |ship|
-    window.setpos(start_north + ship.north, start_east + ship.east)
-    window.addstr(ship.to_s)
-    window.refresh
-    # sleep 0.1
+  Curses.setpos((start_north / scale).to_i, (start_east / scale).to_i)
+
+  ship.navigate(File.readlines(ARGV[0])) do
+    Curses.clear
+    Curses.setpos((start_north + ship.north / scale).to_i,
+                  (start_east + ship.east / scale).to_i)
+    # Curses.addstr(ship.to_s)
+
+    Curses.setpos(((start_north + ship.north + ship.waypoint.north) / scale).to_i,
+                  ((start_east + ship.east + ship.waypoint.east) / scale).to_i)
+    Curses.addstr(ship.to_s)
+    Curses.refresh
+    sleep 0.05
   end
 
-  window.getch  # Waiting for a pressed key to exit
+  Curses.getch  # Waiting for a pressed key to exit
 ensure
   Curses.close_screen
 end
