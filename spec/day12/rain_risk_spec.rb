@@ -13,7 +13,7 @@ RSpec.describe RainRisk do
     end
   end
 
-  describe '.manhattan_position_for WaypoinShip' do
+  describe '.manhattan_position_for WaypointShip' do
     subject { described_class.manhattan_position_for(described_class::WaypointShip, input) }
     context 'when example is given' do
       let(:input) { read_file('day12/example1') }
