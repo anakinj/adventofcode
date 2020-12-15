@@ -33,7 +33,6 @@ module DockingData
 
     def write_to_mem2(pos, value)
       addresses = resolve_mem_addresses(pos)
-      p addresses
       addresses.each do |addr|
         mem[addr] = value
       end
