@@ -14,8 +14,8 @@ module ShuttleSearch
     schedules.key(earliest_departure_time) * (earliest_departure_time - now)
   end
 
-  def self.coin_contest_answer(input) # rubocop:disable Metrics/MethodLength
-    busses       = parse_and_sort_busses(input)
+  def self.coin_contest_answer(input)
+    busses = parse_and_sort_busses(input)
     first_bus    = busses.first
     time_step    = first_bus[:number]
     current_time = first_bus[:number] - first_bus[:pos]
