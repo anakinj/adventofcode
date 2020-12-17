@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative 'conway_cubes'
+require 'curses'
+
+Curses.init_screen
+Curses.curs_set(0)
+
+begin
+  start_x = 60
+  start_y = 50
+
+  Curses.clear
+  ::ConwayCubes.cycle(File.read(ARGV[0])) do |cubicle|
+    Curses.clear
+    cubicle.dimensions.each do |z, xs|
+      z_y = start_y + z * 15
+      xs.each do |x, ys|
+        next unless ys.values.any?(&:active?)
+
+        ys.each do |y, cube|
+          Curses.setpos(z_y + y, start_x + x)
+          Curses.addstr(cube.to_s)
+        end
+      end
+    end
+
+    Curses.refresh
+    sleep 5
+  end
+
+  Curses.getch  # Waiting for a pressed key to exit
+ensure
+  Curses.close_screen
+end
