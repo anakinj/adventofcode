@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module FixExpenseReport
-  def fix(file = ARGV[0]) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+  def fix(file = ARGV[0]) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
     numbers = File.readlines(file).map(&:to_i)
     the_numbers = numbers.each_with_object([]) do |first_number, arr|
       numbers.each do |second_number|
