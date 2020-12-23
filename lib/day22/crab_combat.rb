@@ -17,14 +17,11 @@ class CrabCombat
     end
   end
 
-  def play!
+  def regular
     p1 = @players.first
     p2 = @players.last
 
     while winner.nil?
-      p p1
-      p p2
-
       p1c = p1.shift
       p2c = p2.shift
 
@@ -37,14 +34,69 @@ class CrabCombat
     end
   end
 
+  def recursive
+    game = RecursiveGame.new(@players.first, @players.last)
+
+    game.play!
+
+    @players = [game.player1, game.player2]
+  end
+
   def winner
     return nil unless @players.any? { |p| p.size.zero? }
 
     @players.find { |p| p.size.positive? }
   end
 
-  def winner_total
-    play!
+  class RecursiveGame
+    attr_reader :player1, :player2, :history1, :history2
+
+    def initialize(player1, player2, game = 1)
+      @player1 = player1.dup
+      @player2 = player2.dup
+      @history = {}
+      @round = 0
+      @game = game
+    end
+
+    def play!
+      while !player1.empty? && !player2.empty?
+        @round += 1
+        if @history[[player1, player2]]
+          player2.clear
+          next
+        end
+
+        @history[[player1.dup, player2.dup]] = true
+        # puts "\n-- Round #{@round} (Game #{@game}) --"
+        # puts "Player 1's deck: #{player1.join(', ')}"
+        # puts "Player 2's deck: #{player2.join(', ')}"
+        p1c = player1.shift
+        p2c = player2.shift
+
+        # puts "Player 1 plays: #{p1c}"
+        # puts "Player 2 plays: #{p2c}"
+
+        if player1.size >= p1c && player2.size >= p2c
+          RecursiveGame.new(player1[0...p1c], player2[0...p2c], @game + 1).tap(&:play!).tap do |subgame|
+            if subgame.player1.empty?
+              player2.push(p2c, p1c)
+            else
+              player1.push(p1c, p2c)
+            end
+            next
+          end
+        elsif p1c > p2c
+          player1.push(p1c, p2c)
+        else
+          player2.push(p2c, p1c)
+        end
+      end
+    end
+  end
+
+  def play(game = :regular)
+    send(game)
 
     winner.reverse.each_with_index.map do |card, index|
       card * (index + 1)
