@@ -59,7 +59,7 @@ class CrabCombat
       @game = game
     end
 
-    def play!
+    def play! # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength
       while !player1.empty? && !player2.empty?
         @round += 1
         if @history[[player1, player2]]
@@ -68,14 +68,8 @@ class CrabCombat
         end
 
         @history[[player1.dup, player2.dup]] = true
-        # puts "\n-- Round #{@round} (Game #{@game}) --"
-        # puts "Player 1's deck: #{player1.join(', ')}"
-        # puts "Player 2's deck: #{player2.join(', ')}"
         p1c = player1.shift
         p2c = player2.shift
-
-        # puts "Player 1 plays: #{p1c}"
-        # puts "Player 2 plays: #{p2c}"
 
         if player1.size >= p1c && player2.size >= p2c
           RecursiveGame.new(player1[0...p1c], player2[0...p2c], @game + 1).tap(&:play!).tap do |subgame|
