@@ -36,3 +36,7 @@ func CalculateDepthPart2(filename string) int {
 func CalculateDepthPart1(filename string) int {
 	return compareDepths(file.ReadIntegers(filename))
 }
+
+func main() {
+
+}
