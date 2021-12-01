@@ -25,18 +25,25 @@ func ConvertArrayOfStringToArrayOfIntegers(arrayOfStrings []string) []int {
 	return retVal
 }
 
-func CalculateDepth(filename string) int {
+func ReadIntegersFromFile(filename string) []int {
 	lines, err := ReadLines(filename)
+
 	if err != nil {
-		return -1
+		return make([]int, 0)
 	}
 
-	numbers := ConvertArrayOfStringToArrayOfIntegers(lines)
+	return ConvertArrayOfStringToArrayOfIntegers(lines)
+}
 
+func CalculateDepthCombined(filename string) int {
+	return 0
+}
+
+func CalculateDepthPart1(filename string) int {
 	var previousDepth int = 0
 	var increasedCount int = 0
 
-	for _, currentDepth := range numbers {
+	for _, currentDepth := range ReadIntegersFromFile(filename) {
 		if previousDepth > 0 {
 			if currentDepth > previousDepth {
 				increasedCount++
