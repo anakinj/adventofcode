@@ -44,10 +44,8 @@ func CalculateDepthPart1(filename string) int {
 	var increasedCount int = 0
 
 	for _, currentDepth := range ReadIntegersFromFile(filename) {
-		if previousDepth > 0 {
-			if currentDepth > previousDepth {
-				increasedCount++
-			}
+		if previousDepth > 0 && currentDepth > previousDepth {
+			increasedCount++
 		}
 		previousDepth = currentDepth
 	}
