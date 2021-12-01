@@ -18,4 +18,18 @@ func TestPart1(t *testing.T) {
 	}
 }
 
+func TestPart2ExampleInput(t *testing.T) {
+	got := CalculateDepthPart2("example.input")
+	want := 5
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
+	}
+}
 
+func TestPart2(t *testing.T) {
+	got := CalculateDepthPart2("depths.input")
+	want := 1362
+	if got != want {
+		t.Errorf("got %d want %d", got, want)
+	}
+}
