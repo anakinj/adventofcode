@@ -1,35 +1,11 @@
 package main
 
 import (
-	"io/ioutil"
-	"strconv"
-	"strings"
+	"antman.io/utils/array"
+	"antman.io/utils/file"
 )
 
-func ReadLines(filename string) []string {
-	content, err := ioutil.ReadFile(filename)
-	if err != nil {
-		panic(err)
-	}
-	return strings.Split(string(content), "\n")
-}
-
-func ConvertArrayOfStringToArrayOfIntegers(arrayOfStrings []string) []int {
-	var retVal = []int{}
-	for _, i := range arrayOfStrings {
-		integer, err := strconv.Atoi(i)
-		if err == nil {
-			retVal = append(retVal, integer)
-		}
-	}
-	return retVal
-}
-
-func ReadIntegersFromFile(filename string) []int {
-	return ConvertArrayOfStringToArrayOfIntegers(ReadLines(filename))
-}
-
-func CompareDepths(depths []int) int {
+func compareDepths(depths []int) int {
 	var previousDepth int = 0
 	var increasedCount int = 0
 
@@ -43,28 +19,20 @@ func CompareDepths(depths []int) int {
 	return increasedCount
 }
 
-func SumArrayValues(values []int) int {
-	retVal := 0
-	for _, v := range values {
-		retVal += v
-	}
-	return retVal
-}
-
-func CombineThrees(depths []int) []int {
+func combineThrees(depths []int) []int {
 	var retVal = []int{}
 
 	for iDepth := 0; iDepth < len(depths)-2; iDepth++ {
-		retVal = append(retVal, SumArrayValues(depths[iDepth:iDepth+3]))
+		retVal = append(retVal, array.SumValues(depths[iDepth:iDepth+3]))
 	}
 
 	return retVal
 }
 
 func CalculateDepthPart2(filename string) int {
-	return CompareDepths(CombineThrees(ReadIntegersFromFile(filename)))
+	return compareDepths(combineThrees(file.ReadIntegers(filename)))
 }
 
 func CalculateDepthPart1(filename string) int {
-	return CompareDepths(ReadIntegersFromFile(filename))
+	return compareDepths(file.ReadIntegers(filename))
 }
