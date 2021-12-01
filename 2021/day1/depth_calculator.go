@@ -1,25 +1,42 @@
 package main
 
 import (
-	"bufio"
-	"os"
+	"io/ioutil"
 	"strconv"
+	"strings"
 )
 
-func CalculateDepth(fileInput string) int {
-	file, err := os.Open(fileInput)
+func ReadLines(filename string) ([]string, error) {
+	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-			return -1
+		return make([]string, 0), err
 	}
-	defer file.Close()
+	return strings.Split(string(content), "\n"), nil
+}
 
-	scanner := bufio.NewScanner(file)
+func ConvertArrayOfStringToArrayOfIntegers(arrayOfStrings []string) []int {
+	var retVal = []int{}
+	for _, i := range arrayOfStrings {
+		j, err := strconv.Atoi(i)
+		if err == nil {
+			retVal = append(retVal, j)
+		}
+	}
+	return retVal
+}
+
+func CalculateDepth(filename string) int {
+	lines, err := ReadLines(filename)
+	if err != nil {
+		return -1
+	}
+
+	numbers := ConvertArrayOfStringToArrayOfIntegers(lines)
 
 	var previousDepth int = 0
 	var increasedCount int = 0
- 
-	for scanner.Scan() {
-		currentDepth, _ := strconv.Atoi(scanner.Text())
+
+	for _, currentDepth := range numbers {
 		if previousDepth > 0 {
 			if currentDepth > previousDepth {
 				increasedCount++
