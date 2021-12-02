@@ -1,9 +1,10 @@
 package file
 
 import (
-	"antman.io/utils/array"
 	"io/ioutil"
 	"strings"
+
+	"antman.io/utils/array"
 )
 
 func ReadLines(filename string) []string {
