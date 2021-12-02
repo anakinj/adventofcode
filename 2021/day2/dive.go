@@ -44,6 +44,25 @@ func Dive(filename string) int {
 	return depth * distance
 }
 
+func DiveAndAim(filename string) int {
+	instruction := extractInstructions(file.ReadLines(filename))
+	aim := 0
+	depth := 0
+	distance := 0
+	for _, instruction := range instruction {
+		switch instruction.direction {
+		case "forward":
+			distance += instruction.count
+			depth += aim * instruction.count
+		case "up":
+			aim -= instruction.count
+		case "down":
+			aim += instruction.count
+		}
+	}
+	return depth * distance
+}
+
 func main() {
 
 }
